@@ -24,9 +24,7 @@ public class TodoController {
     public String todos(Model model) {
         // TodoRepository todoRepository = new TodoRepository();
         List<TodoDto> todos = todoRepository.findAll();
-
         model.addAttribute("todos", todos);
-
         return "todos";
     }
 
@@ -83,8 +81,7 @@ public class TodoController {
             @PathVariable Long id,
             @RequestParam String title,
             @RequestParam String content,
-            @RequestParam(defaultValue = "false") Boolean completed,
-            Model model
+            @RequestParam(defaultValue = "false") Boolean completed
     ) {
         TodoDto todo = todoRepository.findById(id);
 
@@ -95,7 +92,5 @@ public class TodoController {
         todoRepository.save(todo);
 
         return "redirect:/todos/" + id;
-
     }
-
 }
