@@ -20,8 +20,15 @@ public class TodoRepository {
         return todo;
     }
 
+    // 저장소(storage)에 담긴 모든 값(values)을 리스트 형태로 반환.
     public List<TodoDto> findAll() {
-        // 저장소(storage)에 담긴 모든 값(values)을 리스트 형태로 반환.
         return new ArrayList<>(storage.values());
     }
+
+    // 특정 ID로 찾기
+    public TodoDto findById(Long id) {
+        return storage.get(id);
+    }
+
+
 }
