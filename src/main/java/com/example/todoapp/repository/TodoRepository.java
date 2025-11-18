@@ -16,7 +16,9 @@ public class TodoRepository {
 
     // 저장
     public TodoDto save(TodoDto todo) {
-        todo.setId(nextId++);   // id 설정
+        if (todo.getId() == null) {
+            todo.setId(nextId++);
+        }
         storage.put(todo.getId(), todo);
         return todo;
     }
@@ -31,5 +33,8 @@ public class TodoRepository {
         return storage.get(id);
     }
 
-
+    // 특정 ID로 찾아서 삭제
+    public void deleteById(Long id) {
+        storage.remove(id);
+    }
 }
