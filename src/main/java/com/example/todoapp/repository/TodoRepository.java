@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Repository
 public class TodoRepository {
 
     private static final Map<Long, TodoDto> storage = new ConcurrentHashMap<>();

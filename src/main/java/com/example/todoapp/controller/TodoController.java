@@ -14,7 +14,11 @@ import java.util.List;
 public class TodoController {
 
     // 이전에 만들었던 Repository와 다른 객체를 사용하면 안된다.
-    private final TodoRepository todoRepository = new TodoRepository();
+    private TodoRepository todoRepository;
+
+    public TodoController(TodoRepository todoRepository) {
+        this.todoRepository = todoRepository;
+    }
 
     @GetMapping("/todos")
     public String todos(Model model) {
