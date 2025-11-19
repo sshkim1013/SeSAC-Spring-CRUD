@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
@@ -29,8 +30,11 @@ public class TodoRepository {
     }
 
     // 특정 ID로 찾기
-    public TodoDto findById(Long id) {
-        return storage.get(id);
+    public Optional<TodoDto> findById(Long id) {
+        // return storage.get(id);
+
+        // storage.get(id)의 값이 null일 수도 있다.
+        return Optional.ofNullable(storage.get(id));
     }
 
     // 특정 ID로 찾아서 삭제
