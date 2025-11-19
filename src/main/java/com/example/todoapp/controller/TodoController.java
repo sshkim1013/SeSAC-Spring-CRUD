@@ -6,11 +6,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/todos")
 public class TodoController {
 
     // 이전에 만들었던 Repository와 다른 객체를 사용하면 안된다.
@@ -20,7 +22,7 @@ public class TodoController {
         this.todoRepository = todoRepository;
     }
 
-    @GetMapping("/todos")
+    @GetMapping
     public String todos(Model model) {
         // TodoRepository todoRepository = new TodoRepository();
         List<TodoDto> todos = todoRepository.findAll();
@@ -28,12 +30,12 @@ public class TodoController {
         return "todos";
     }
 
-    @GetMapping("/todos/new")
+    @GetMapping("/new")
     public String newTodo() {
         return "new";
     }
 
-    @GetMapping("/todos/create")
+    @GetMapping("/create")
     public String create(
             @RequestParam String title,
             @RequestParam String content,
@@ -48,7 +50,7 @@ public class TodoController {
         return "redirect:/todos";
     }
 
-    @GetMapping("/todos/{id}")
+    @GetMapping("/{id}")
     public String detail(
             @PathVariable Long id,
             Model model
@@ -63,7 +65,7 @@ public class TodoController {
         }
     }
 
-    @GetMapping("/todos/{id}/delete")
+    @GetMapping("/{id}/delete")
     public String delete(
             @PathVariable Long id
     ) {
@@ -71,7 +73,7 @@ public class TodoController {
         return "redirect:/todos";
     }
 
-    @GetMapping("/todos/{id}/edit")
+    @GetMapping("/{id}/edit")
     public String edit(
             @PathVariable Long id,
             Model model
@@ -86,7 +88,7 @@ public class TodoController {
         }
     }
 
-    @GetMapping("/todos/{id}/update")
+    @GetMapping("/{id}/update")
     public String update(
             @PathVariable Long id,
             @RequestParam String title,
@@ -105,29 +107,44 @@ public class TodoController {
 
             return "redirect:/todos/" + id;
         } catch (IllegalArgumentException e) {
-            return "redirect:/todos/";
+            return "redirect:/todos";
         }
     }
 
-    @GetMapping("/todos/search")
+    @GetMapping("/search")
     public String search(@RequestParam String keyword, Model model) {
         List<TodoDto> todos = todoRepository.findByTitleContaining(keyword);
         model.addAttribute("todos", todos);
         return "todos";
     }
 
-    @GetMapping("/todos/active")
+    @GetMapping("/active")
     public String active(Model model) {
         List<TodoDto> todos = todoRepository.findByCompleted(false);
         model.addAttribute("todos", todos);
         return "todos";
     }
 
-    @GetMapping("/todos/completed")
+    @GetMapping("/completed")
     public String completed(Model model) {
         List<TodoDto> todos = todoRepository.findByCompleted(true);
         model.addAttribute("todos", todos);
         return "todos";
+    }
+
+    @GetMapping("/{id}/toggle")
+    public String toggle(
+            @PathVariable Long id
+    ) {
+        try {
+            TodoDto todo = todoRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Todo Not Found"));
+            todo.setCompleted(!todo.isCompleted());
+            todoRepository.save(todo);
+            return "redirect:/todos/" + id;
+        } catch (IllegalArgumentException e) {
+            return "redirect:/todos";
+        }
     }
 
 }

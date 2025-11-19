@@ -4,12 +4,6 @@
       layout:decorate="~{layout/default}"
 >
 <div layout:fragment="content">
-    <!-- <h3 th:each="todo : ${todos}" th:text="${todo.getTitle()}"></h3> -->
-    <div th:each="todo : ${todos}">
-        <h3 th:text="${todo.getTitle()}"></h3>
-        <a th:href="@{/todos/{id}(id=${todo.getId()})}">detail</a>
-    </div>
-
     <table class="table table-striped">
         <thead>
             <th>ID</th>
@@ -19,7 +13,15 @@
         </thead>
         <tbody>
             <tr th:each="todo : ${todos}">
-                a
+                <td th:text="${todo.id}"></td>
+                <td th:text="${todo.title}"></td>
+                <td>
+                    <span th:if="${todo.completed}" class="badge bd-success">완료</span>
+                    <span th:unless="${todo.completed}" class="badge bd-warning">진행중</span>
+                </td>
+                <td>
+                    <a th:href="@{/todos/{id}(id=${todo.id})}" class="btn btn-sm btn-primary">DETAIL</a>
+                </td>
             </tr>
         </tbody>
     </table>
