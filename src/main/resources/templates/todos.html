@@ -16,8 +16,8 @@
                 <td th:text="${todo.id}"></td>
                 <td th:text="${todo.title}"></td>
                 <td>
-                    <span th:if="${todo.completed}" class="badge bd-success">완료</span>
-                    <span th:unless="${todo.completed}" class="badge bd-warning">진행중</span>
+                    <span th:if="${todo.completed}" class="badge bg-success">완료</span>
+                    <span th:unless="${todo.completed}" class="badge bg-warning">진행중</span>
                 </td>
                 <td>
                     <a th:href="@{/todos/{id}(id=${todo.id})}" class="btn btn-sm btn-primary">DETAIL</a>

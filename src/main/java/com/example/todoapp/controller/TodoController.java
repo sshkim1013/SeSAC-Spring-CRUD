@@ -4,10 +4,7 @@ import com.example.todoapp.dto.TodoDto;
 import com.example.todoapp.repository.TodoRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,7 +32,8 @@ public class TodoController {
         return "new";
     }
 
-    @GetMapping("/create")
+    // @GetMapping("/create")
+    @PostMapping
     public String create(
             @RequestParam String title,
             @RequestParam String content,
@@ -73,7 +71,7 @@ public class TodoController {
         return "redirect:/todos";
     }
 
-    @GetMapping("/{id}/edit")
+    @GetMapping("/{id}/update")
     public String edit(
             @PathVariable Long id,
             Model model
@@ -82,13 +80,13 @@ public class TodoController {
             TodoDto todo = todoRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("Todo Not Found"));
             model.addAttribute("todo", todo);
-            return "edit";
+            return "update";
         } catch (IllegalArgumentException e) {
             return "redirect:/todos";
         }
     }
 
-    @GetMapping("/{id}/update")
+    @PostMapping("/{id}/update")
     public String update(
             @PathVariable Long id,
             @RequestParam String title,
