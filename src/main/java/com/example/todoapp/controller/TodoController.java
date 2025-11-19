@@ -5,6 +5,7 @@ import com.example.todoapp.repository.TodoRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class TodoController {
     public String create(
             @RequestParam String title,
             @RequestParam String content,
+            RedirectAttributes redirectAttributes,
             Model model
     ) {
         TodoDto todoDto = new TodoDto(null, title, content, false);
@@ -44,7 +46,9 @@ public class TodoController {
 
         TodoDto todo = todoRepository.save(todoDto);
         model.addAttribute("todo", todo);
+        redirectAttributes.addFlashAttribute("message", "새로운 할 일이 생성되었습니다.");
 
+        // return "create";
         return "redirect:/todos";
     }
 
@@ -65,9 +69,12 @@ public class TodoController {
 
     @GetMapping("/{id}/delete")
     public String delete(
-            @PathVariable Long id
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes
     ) {
         todoRepository.deleteById(id);
+        redirectAttributes.addFlashAttribute("message", "할 일이 삭제되었습니다.");
+        redirectAttributes.addFlashAttribute("status", "delete");
         return "redirect:/todos";
     }
 
@@ -91,7 +98,8 @@ public class TodoController {
             @PathVariable Long id,
             @RequestParam String title,
             @RequestParam String content,
-            @RequestParam(defaultValue = "false") Boolean completed
+            @RequestParam(defaultValue = "false") Boolean completed,
+            RedirectAttributes redirectAttributes
     ) {
         try {
             TodoDto todo = todoRepository.findById(id)
@@ -102,6 +110,8 @@ public class TodoController {
             todo.setCompleted(completed);
 
             todoRepository.save(todo);
+            redirectAttributes.addFlashAttribute("message", "할 일이 수정되었습니다.");
+
 
             return "redirect:/todos/" + id;
         } catch (IllegalArgumentException e) {
@@ -141,6 +151,7 @@ public class TodoController {
             todoRepository.save(todo);
             return "redirect:/todos/" + id;
         } catch (IllegalArgumentException e) {
+
             return "redirect:/todos";
         }
     }
