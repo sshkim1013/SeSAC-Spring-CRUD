@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 @Repository
 public class TodoRepository {
@@ -41,4 +42,12 @@ public class TodoRepository {
     public void deleteById(Long id) {
         storage.remove(id);
     }
+
+    // 특정 키워드로 검색하기(필터링)
+    public List<TodoDto> findByTitleContaining(String keyword) {
+        return storage.values().stream()
+                .filter((todo) -> todo.getTitle().contains(keyword))
+                .toList();
+    }
+
 }
