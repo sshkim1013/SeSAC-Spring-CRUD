@@ -24,6 +24,9 @@ public class TodoController {
         // TodoRepository todoRepository = new TodoRepository();
         List<TodoDto> todos = todoService.getAllTodos();
         model.addAttribute("todos", todos);
+        model.addAttribute("totalCount", todoService.getTotalCount());
+        model.addAttribute("completedCount", todoService.getCompletedCount());
+        model.addAttribute("activeCount", todoService.getActiveCount());
         return "todos";
     }
 
@@ -134,5 +137,11 @@ public class TodoController {
     }
 
     // 3. 완료된 할 일 일괄 삭제
-
+    @GetMapping("/delete-completed")
+    public String deleteCompleted(RedirectAttributes redirectAttributes) {
+        // 지우기(delete all)
+        todoService.deleteCompletedTodos();
+        redirectAttributes.addFlashAttribute("message", "완료된 할 일 삭제");
+        return "redirect:/todos";
+    }
 }

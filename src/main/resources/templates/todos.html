@@ -4,6 +4,13 @@
       layout:decorate="~{layout/default}"
 >
 <div layout:fragment="content">
+
+    <div class="stats">
+        <p>전체: <span th:text="${totalCount}"></span></p>
+        <p>완료: <span th:text="${completedCount}"></span></p>
+        <p>미완료: <span th:text="${activeCount}"></span></p>
+    </div>
+
     <table class="table table-striped">
         <thead>
             <th>ID</th>
@@ -21,13 +28,6 @@
                 </td>
                 <td>
                     <a th:href="@{/todos/{id}(id=${todo.id})}" class="btn btn-sm btn-primary">DETAIL</a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span>완료 여부 별 분류</span>
-                    <span></span>
-                    <span></span>
                 </td>
             </tr>
         </tbody>
