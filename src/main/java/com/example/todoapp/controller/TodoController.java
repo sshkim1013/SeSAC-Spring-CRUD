@@ -38,9 +38,14 @@ public class TodoController {
             @ModelAttribute TodoDto todo,
             RedirectAttributes redirectAttributes
     ) {
-        todoService.createTodo(todo);
-        redirectAttributes.addFlashAttribute("message", "새로운 할 일이 생성되었습니다.");
-        return "redirect:/todos";
+        try {
+            todoService.createTodo(todo);
+            redirectAttributes.addFlashAttribute("message", "새로운 할 일이 생성되었습니다.");
+            return "redirect:/todos";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/todos/new";
+        }
     }
 
     @GetMapping("/{id}")
@@ -127,5 +132,7 @@ public class TodoController {
             return "redirect:/todos";
         }
     }
+
+    // 3. 완료된 할 일 일괄 삭제
 
 }

@@ -32,6 +32,8 @@ public class TodoService {
     public TodoDto updateTodoById(Long id, TodoDto newTodo) {
         TodoDto originTodo = getTodoById(id);
 
+        validateTitle(newTodo.getTitle());
+
         originTodo.setTitle(newTodo.getTitle());
         originTodo.setContent(newTodo.getContent());
         originTodo.setCompleted(newTodo.isCompleted());
@@ -40,6 +42,7 @@ public class TodoService {
     }
 
     public TodoDto createTodo(TodoDto todo) {
+        validateTitle(todo.getTitle());
         return todoRepository.save(todo);
     }
 
@@ -56,4 +59,17 @@ public class TodoService {
         todo.setCompleted(!todo.isCompleted());
         return todoRepository.save(todo);
     }
+
+    // 1. 제목 검증 추가
+    //  - 제목이 비어 있으면 예외
+    //  - 제목이 50자 초과 시 예외
+    private void validateTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("제목은 필수입니다.");
+        }
+        if (title.length() > 50) {
+            throw new IllegalArgumentException("제목은 50자를 넘을 수 없습니다.");
+        }
+    }
+
 }
