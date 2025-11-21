@@ -1,12 +1,16 @@
 package com.example.todoapp.service;
 
 import com.example.todoapp.dto.TodoDto;
+import com.example.todoapp.entity.TodoEntity;
 import com.example.todoapp.repository.TodoRepository;
+import jakarta.transaction.Transactional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class TodoService {
 
     private final TodoRepository todoRepository;
@@ -15,49 +19,67 @@ public class TodoService {
         this.todoRepository = todoRepository;
     }
 
+    public TodoDto createTodo(TodoDto dto) {
+        validateTitle(dto.getTitle());
+
+        TodoEntity entity = new TodoEntity(
+            dto.getTitle(), dto.getContent(), dto.isCompleted()
+        );
+
+        TodoEntity saved = todoRepository.save(entity);
+
+        return toDto(saved);
+    }
+
     public List<TodoDto> getAllTodos() {
-        return todoRepository.findAll();
+        return todoRepository.findAll().stream()
+            .map(this::toDto)
+            .collect(Collectors.toList());
+    }
+
+    private TodoEntity findEntityById(Long id) {
+        return todoRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Todo Not Found"));
     }
 
     public TodoDto getTodoById(Long id) {
-        return todoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Todo Not Found"));
+        return toDto(findEntityById(id));
+    }
+
+    public TodoDto updateTodoById(Long id, TodoDto dto) {
+        validateTitle(dto.getTitle());
+
+        TodoEntity entity = findEntityById(id);
+
+        entity.setTitle(dto.getTitle());
+        entity.setContent(dto.getContent());
+        entity.setCompleted(dto.isCompleted());
+
+        return toDto(entity);
     }
 
     public void deleteTodoById(Long id) {
-        getTodoById(id);
-        todoRepository.deleteById(id);
-    }
-
-    public TodoDto updateTodoById(Long id, TodoDto newTodo) {
-        TodoDto originTodo = getTodoById(id);
-
-        validateTitle(newTodo.getTitle());
-
-        originTodo.setTitle(newTodo.getTitle());
-        originTodo.setContent(newTodo.getContent());
-        originTodo.setCompleted(newTodo.isCompleted());
-
-        return todoRepository.save(originTodo);
-    }
-
-    public TodoDto createTodo(TodoDto todo) {
-        validateTitle(todo.getTitle());
-        return todoRepository.save(todo);
+        // getTodoById(id);
+        TodoEntity entity = findEntityById(id);
+        todoRepository.deleteById(entity.getId());
     }
 
     public List<TodoDto> searchTodos(String keyword) {
-        return todoRepository.findByTitleContaining(keyword);
+        return todoRepository.findByTitleContaining(keyword).stream()
+            .map(this::toDto)
+            .collect(Collectors.toList());
     }
 
     public List<TodoDto> getTodosByCompleted(boolean completed) {
-        return todoRepository.findByCompleted(completed);
+        return todoRepository.findByCompleted(completed).stream()
+            .map(this::toDto)
+            .collect(Collectors.toList());
     }
 
     public TodoDto toggleCompleted(Long id) {
-        TodoDto todo = getTodoById(id);
-        todo.setCompleted(!todo.isCompleted());
-        return todoRepository.save(todo);
+        TodoEntity entity = findEntityById(id);
+        entity.setCompleted(!entity.isCompleted());
+        return toDto(entity);
     }
 
     // 1. 제목 검증 추가
@@ -86,6 +108,15 @@ public class TodoService {
 
     public void deleteCompletedTodos() {
         // todoRepository.findByCompleted(true);
-        todoRepository.deleteCompleted();
+        todoRepository.deleteByCompleted(true);
+    }
+
+    private TodoDto toDto(TodoEntity todo) {
+        return new TodoDto(
+            todo.getId(),
+            todo.getTitle(),
+            todo.getContent(),
+            todo.isCompleted()
+        );
     }
 }
